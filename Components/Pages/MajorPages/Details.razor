@@ -1,0 +1,48 @@
+﻿@page "/majors/details"
+@using Microsoft.EntityFrameworkCore
+@using SIMS.Data
+@inject IDbContextFactory<SIMS.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Major Details</PageTitle>
+
+<div class="container-fluid p-4">
+ <div class="d-flex align-items-center mb-4">
+ <a href="/majors" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+ <h1 class="mb-0"><i class="bi bi-info-circle text-primary"></i> Major Details</h1>
+ </div>
+
+ @if (major is null)
+ {
+ <div class="card shadow-sm"><div class="card-body">Loading...</div></div>
+ }
+ else
+ {
+ <div class="card shadow-sm"><div class="card-body">
+ <dl class="row">
+ <dt class="col-sm-3">Name</dt><dd class="col-sm-9">@major.Name</dd>
+ <dt class="col-sm-3">Department</dt><dd class="col-sm-9">@major.Department.Name</dd>
+ </dl>
+ <a class="btn btn-outline-secondary" href="/majors">Back to List</a>
+ </div></div>
+ }
+</div>
+
+@code {
+ private Major? major;
+
+ [SupplyParameterFromQuery]
+ private int Id { get; set; }
+
+ protected override async Task OnInitializedAsync()
+ {
+ using var context = DbFactory.CreateDbContext();
+ major = await context.Majors.Include(m => m.Department).FirstOrDefaultAsync(m => m.Id == Id);
+
+
+ if (major is null)
+ {
+ NavigationManager.NavigateTo("notfound");
+ }
+ }
+}

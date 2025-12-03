@@ -1,0 +1,48 @@
+@page "/weathers/delete"
+@using SIMS.Pages.WeatherPages
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete Weather</PageTitle>
+
+<div class="container-fluid p-4">
+ <div class="d-flex align-items-center mb-4">
+ <a href="/weathers" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+ <h1 class="mb-0"><i class="bi bi-trash text-primary"></i> Delete Weather</h1>
+ </div>
+
+ @if (Item is null)
+ {
+ <div class="card shadow-sm"><div class="card-body">Loading...</div></div>
+ }
+ else
+ {
+ <div class="card shadow-sm"><div class="card-body">
+ <div class="alert alert-danger">Are you sure you want to delete weather on <strong>@Item.Date</strong>?</div>
+ <EditForm OnValidSubmit="DeleteItem" Model="Item" FormName="delete-weather">
+ <div class="d-flex gap-2">
+ <button class="btn btn-danger" type="submit">Delete</button>
+ <a class="btn btn-outline-secondary" href="/weathers">Cancel</a>
+ </div>
+ </EditForm>
+ </div></div>
+ }
+</div>
+
+@code {
+ [SupplyParameterFromQuery]
+ public int Id { get; set; }
+
+ private WeatherStore.WeatherItem? Item { get; set; }
+
+ protected override void OnInitialized()
+ {
+ Item = WeatherStore.GetById(Id);
+ if (Item is null) NavigationManager.NavigateTo("notfound");
+ }
+
+ private void DeleteItem()
+ {
+ WeatherStore.Remove(Item!.Id);
+ NavigationManager.NavigateTo("/weathers");
+ }
+}
