@@ -91,7 +91,7 @@
     {
         using var context = DbFactory.CreateDbContext();
         Courses = await context.Courses
-            .Include(c => c.Subject)
+        .Include(c => c.Subject)
             .Include(c => c.Semester)
             .AsNoTracking()
             .ToListAsync();
